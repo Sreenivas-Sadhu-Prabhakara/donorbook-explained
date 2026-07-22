@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+  <title>How to know when you can donate blood again — donorbook explained</title>
+  <meta name="description" content="An animated explainer of donorbook: how a free, offline tool computes the exact date you can next donate blood from cited national rules, and keeps your donor logbook private on your own device.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="canonical" href="https://sreenivas-sadhu-prabhakara.github.io/donorbook-explained/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Sreenivas Sadhu Prabhakara">
+  <meta name="keywords" content="when can I donate blood again, blood donation interval, how donorbook works, next donation date, blood donor eligibility explained, private donor logbook, offline blood donation calculator">
+  <meta name="theme-color" content="#1D1109" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4EFE4" media="(prefers-color-scheme: light)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="donorbook explained">
+  <meta property="og:title" content="How to know when you can donate blood again — donorbook explained">
+  <meta property="og:description" content="An animated walkthrough of the idea behind donorbook: cited national donation-interval rules, an exact next-donation date, and a donor logbook that never leaves your browser.">
+  <meta property="og:url" content="https://sreenivas-sadhu-prabhakara.github.io/donorbook-explained/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://sreenivas-sadhu-prabhakara.github.io/donorbook-explained/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="donorbook explained — the eligibility ring filling toward a next-eligible date">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to know when you can donate blood again — donorbook explained">
+  <meta name="twitter:description" content="An animated walkthrough of donorbook: cited national rules, an exact next-donation date, and a donor logbook that never leaves your browser.">
+  <meta name="twitter:image" content="https://sreenivas-sadhu-prabhakara.github.io/donorbook-explained/og-image.png">
+  <meta name="twitter:image:alt" content="donorbook explained — the eligibility ring filling toward a next-eligible date">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Structured data (data block; not affected by script-src) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "donorbook explained",
+    "description": "An animated single-page explainer of donorbook — a free, offline blood-donation eligibility and next-donation-date tool built from cited national rules, with a private on-device donor logbook.",
+    "url": "https://sreenivas-sadhu-prabhakara.github.io/donorbook-explained/",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Any (modern web browser)",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Sreenivas Sadhu Prabhakara" },
+    "softwareVersion": "0.1.0",
+    "featureList": [
+      "Animated explanation of the blood-donation interval rule",
+      "How the eligibility ring counts down to your next-eligible date",
+      "Why every verdict shows its cited source rule",
+      "How connect-src 'none' enforces privacy in the browser",
+      "A guided tour of the donorbook feature set"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does donorbook know when I can donate blood again?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "It adds your country's published donation interval to your last-donation date. For whole blood: the American Red Cross allows every 56 days; UK NHSBT allows men every 12 weeks (84 days) and women every 16 weeks (112 days); India's NBTC allows men every 90 days and women every 120 days. donorbook does the calendar arithmetic on your device and shows the exact next-eligible date on the eligibility ring."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is donorbook accurate — does it decide if I am eligible?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. donorbook is a pre-check built from the published general rules of three named authorities. Every verdict shows the exact rule, its source link and last-verified date, but medication and detailed medical-history questions always resolve to 'ask the blood bank'. The blood bank's on-site screening always decides."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does donorbook send my donation history anywhere?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. The page's Content-Security-Policy sets connect-src 'none', so the browser itself blocks any network request. Your logbook lives only in this browser's localStorage — it is never transmitted or stored anywhere but your own device."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the explainer</a>
+
+  <!-- progress rail -->
+  <div class="rail" aria-hidden="true"><span class="rail__fill" id="railFill"></span></div>
+
+  <header class="top" id="top">
+    <div class="top__inner">
+      <div class="brand">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="12" fill="none" stroke="var(--ring-track)" stroke-width="3.4"/>
+          <path d="M16 4 a12 12 0 0 1 10.4 6" fill="none" stroke="var(--accent)" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M26.4 10 l1.9 -1.1 a2.2 2.2 0 1 1 -0.8 3.2 z" fill="var(--accent)"/>
+        </svg>
+        <span class="brand__name">donorbook <span class="brand__tag">explained</span></span>
+      </div>
+      <div class="top__actions">
+        <button type="button" class="ghost" id="themeBtn" aria-pressed="false" title="Toggle light / dark">
+          <span class="ghost__ico" aria-hidden="true">◑</span><span class="ghost__txt">Theme</span>
+        </button>
+        <a class="btn btn--sm" href="https://sreenivas-sadhu-prabhakara.github.io/donorbook/">Open the app</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ 1 · HOOK ============ -->
+    <section class="scene scene--hook" id="s-hook" data-scene>
+      <div class="scene__inner">
+        <p class="eyebrow">A free, offline tool for blood donors</p>
+        <h1 class="hook__title">How to know exactly when you can donate blood again</h1>
+        <p class="hook__lede">
+          The week after you give blood, one question comes up: <em>&ldquo;when can I donate again?&rdquo;</em>
+          The honest answer is a single date. <strong>donorbook</strong> computes it on your own device — from
+          cited national rules — and never sends your health information anywhere.
+        </p>
+
+        <!-- hero: the eligibility ring, animated -->
+        <div class="hero-ring" role="img" aria-label="An eligibility ring filling toward a next-eligible date, 14 days to go">
+          <svg viewBox="0 0 200 200" class="hero-ring__svg" aria-hidden="true">
+            <circle class="hr-track" cx="100" cy="100" r="82"/>
+            <circle class="hr-fill" cx="100" cy="100" r="82" transform="rotate(-90 100 100)"/>
+            <g class="hr-notch"><circle cx="100" cy="18" r="10"/></g>
+          </svg>
+          <div class="hero-ring__ctr">
+            <span class="hero-ring__big" id="heroDays">14</span>
+            <span class="hero-ring__small">days to go</span>
+          </div>
+        </div>
+
+        <p class="scrollcue" aria-hidden="true"><span>scroll</span><span class="scrollcue__arrow">↓</span></p>
+      </div>
+    </section>
+
+    <!-- ============ 2 · THE REAL PROBLEM ============ -->
+    <section class="scene" id="s-problem" data-scene>
+      <div class="scene__inner">
+        <p class="kicker">The problem</p>
+        <h2 class="scene__h">Search &ldquo;when can I donate blood again&rdquo; and you get everything but a date.</h2>
+        <p class="scene__p">
+          Most results are a vague blog post, or a lead-generation page that wants your name, phone number and
+          medical history before it tells you anything. The real answer is arithmetic anyone can do —
+          <strong>last donation + your country's interval</strong> — and it should not cost you your privacy.
+        </p>
+
+        <div class="problem-cards" data-reveal-group>
+          <div class="pcard pcard--bad" data-reveal>
+            <span class="pcard__tag">what you usually get</span>
+            <ul class="pcard__list">
+              <li><span class="x">✕</span> &ldquo;It depends&rdquo; blog posts with no date</li>
+              <li><span class="x">✕</span> Forms that harvest your details first</li>
+              <li><span class="x">✕</span> Rules for the wrong country</li>
+              <li><span class="x">✕</span> No sense of <em>which</em> rule applies to you</li>
+            </ul>
+          </div>
+          <div class="pcard pcard--good" data-reveal>
+            <span class="pcard__tag">what you actually need</span>
+            <ul class="pcard__list">
+              <li><span class="ok">✓</span> One exact next-eligible <strong>date</strong></li>
+              <li><span class="ok">✓</span> The <strong>cited rule</strong> behind it</li>
+              <li><span class="ok">✓</span> A private place to log donations</li>
+              <li><span class="ok">✓</span> Nothing sent to anyone, ever</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3 · HOW IT WORKS: the interval + ring ============ -->
+    <section class="scene" id="s-how" data-scene>
+      <div class="scene__inner">
+        <p class="kicker">How it works</p>
+        <h2 class="scene__h">Your last donation, plus one published interval, becomes an exact date.</h2>
+        <p class="scene__p">
+          Pick your country and donation type. donorbook reads the interval straight from its cited ruleset and
+          adds it to your last-donation date. The <strong>eligibility ring</strong> then fills up as the wait
+          elapses — a live countdown to the day you can give again.
+        </p>
+
+        <div class="how" data-reveal-group>
+          <!-- the equation -->
+          <div class="how__eq" data-reveal>
+            <div class="eq">
+              <div class="eq__term">
+                <span class="eq__k">last donation</span>
+                <span class="eq__v tabular" id="eqLast">01 Jan</span>
+              </div>
+              <span class="eq__op">+</span>
+              <div class="eq__term eq__term--interval">
+                <span class="eq__k">NBTC interval (male)</span>
+                <span class="eq__v tabular">90 days</span>
+              </div>
+              <span class="eq__op">=</span>
+              <div class="eq__term eq__term--out">
+                <span class="eq__k">next eligible</span>
+                <span class="eq__v tabular" id="eqNext">01 Apr</span>
+              </div>
+            </div>
+            <p class="eq__note">
+              Calendar arithmetic that clamps month-ends and handles leap years — proven to the day in the app's tests.
+            </p>
+          </div>
+
+          <!-- the ring, filling on scroll -->
+          <div class="how__ring" data-reveal>
+            <div class="scene-ring" role="img" aria-label="The eligibility ring at about 68 percent, with 29 days remaining out of a 90-day interval">
+              <svg viewBox="0 0 200 200" class="scene-ring__svg" aria-hidden="true">
+                <g class="sr-ticks" id="srTicks"></g>
+                <circle class="sr-track" cx="100" cy="100" r="82"/>
+                <circle class="sr-fill" id="srFill" cx="100" cy="100" r="82" transform="rotate(-90 100 100)"/>
+                <g class="sr-notch"><circle cx="100" cy="18" r="9"/></g>
+              </svg>
+              <div class="scene-ring__ctr">
+                <span class="scene-ring__big tabular" id="srBig">29</span>
+                <span class="scene-ring__small">days to go</span>
+              </div>
+            </div>
+            <p class="scene-ring__cap">The ring is the motif — the same countdown carried into the icon and the OG card.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4 · CITED RULES / verdict ============ -->
+    <section class="scene" id="s-cited" data-scene>
+      <div class="scene__inner">
+        <p class="kicker">Every verdict is cited</p>
+        <h2 class="scene__h">No number appears without the rule it came from.</h2>
+        <p class="scene__p">
+          donorbook never authors a rule from memory. Each interval, age floor and deferral is quoted verbatim
+          from a named authority — <strong>NBTC India</strong>, the <strong>American Red Cross</strong>,
+          <strong>UK NHSBT</strong> — with a source link and the date it was last verified. And any medication or
+          detailed-history question resolves to a single honest answer: <em>ask the blood bank</em>.
+        </p>
+
+        <div class="verdicts" data-reveal-group>
+          <div class="vcard vcard--ok" data-reveal>
+            <span class="vpill vpill--ok">Likely eligible</span>
+            <p class="vcard__rule">Whole blood, every 56 days.</p>
+            <p class="vcard__src"><cite>American Red Cross</cite> · verified 2026-07-22</p>
+          </div>
+          <div class="vcard vcard--defer" data-reveal>
+            <span class="vpill vpill--defer">Deferred until 12 Aug</span>
+            <p class="vcard__rule">Tattoo in the last 3 months — wait to the resume date.</p>
+            <p class="vcard__src"><cite>UK NHSBT</cite> · verified 2026-07-22</p>
+          </div>
+          <div class="vcard vcard--ask" data-reveal>
+            <span class="vpill vpill--ask">Ask the blood bank</span>
+            <p class="vcard__rule">Started a new medication — never computed here.</p>
+            <p class="vcard__src"><cite>Policy by design</cite> · not medical advice</p>
+          </div>
+        </div>
+
+        <p class="banner" role="note">
+          <span class="banner__ico" aria-hidden="true">◆</span>
+          The blood bank's on-site screening always decides. donorbook is a pre-check from published general rules — it never confirms eligibility.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 5 · PRIVACY: connect-src none ============ -->
+    <section class="scene scene--privacy" id="s-privacy" data-scene>
+      <div class="scene__inner">
+        <p class="kicker">Privacy you can verify</p>
+        <h2 class="scene__h">The browser itself blocks any send. It is not a promise — it is enforced.</h2>
+        <p class="scene__p">
+          donorbook ships one line in its security policy: <code class="csp">connect-src 'none'</code>.
+          That instructs your browser to refuse every network request the page could make — fetch, upload,
+          analytics, all of it. Your donation history stays in this browser's storage and physically cannot leave.
+        </p>
+
+        <div class="wall" data-reveal>
+          <div class="wall__device">
+            <span class="wall__label">your device</span>
+            <div class="wall__data">
+              <span class="chip-lg">logbook</span>
+              <span class="chip-lg">blood group</span>
+              <span class="chip-lg">next date</span>
+            </div>
+          </div>
+          <div class="wall__barrier">
+            <span class="wall__csp"><code>connect-src 'none'</code></span>
+            <div class="wall__packets" aria-hidden="true">
+              <span class="pk pk--1">◍</span><span class="pk pk--2">◍</span><span class="pk pk--3">◍</span>
+            </div>
+            <span class="wall__block" aria-hidden="true">BLOCKED</span>
+          </div>
+          <div class="wall__cloud">
+            <span class="wall__label">the internet</span>
+            <span class="wall__x" aria-hidden="true">no route out</span>
+          </div>
+        </div>
+        <p class="wall__cap">Every packet that tries to leave is stopped at the browser. Offline by construction — it even works with no signal.</p>
+      </div>
+    </section>
+
+    <!-- ============ 6 · FEATURE TOUR ============ -->
+    <section class="scene" id="s-tour" data-scene>
+      <div class="scene__inner">
+        <p class="kicker">A quick tour</p>
+        <h2 class="scene__h">Five things donorbook does — all on your device.</h2>
+
+        <div class="tour" data-reveal-group>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="3.4"/><path d="M20 6 a14 14 0 0 1 12 7" fill="none" stroke="var(--accent)" stroke-width="3.4" stroke-linecap="round"/></svg>
+            </span>
+            <h3 class="feat__h">Next-date calculator</h3>
+            <p class="feat__p">Country × donation type × sex × last date → the exact next-eligible date on the ring.</p>
+          </article>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><path d="M12 20 l6 6 l12 -14" fill="none" stroke="var(--accent)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="feat__h">Guided pre-check</h3>
+            <p class="feat__p">Age, weight, haemoglobin and a fixed set of deferrals → a verdict with its cited rule.</p>
+          </article>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><rect x="9" y="8" width="22" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 16 h12 M14 22 h12 M14 28 h7" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/></svg>
+            </span>
+            <h3 class="feat__h">Private logbook</h3>
+            <p class="feat__p">Date, type, centre, notes — stored only in your browser, with a yearly count vs the cap.</p>
+          </article>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><circle cx="14" cy="20" r="7" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="26" cy="20" r="7" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
+            </span>
+            <h3 class="feat__h">Group compatibility</h3>
+            <p class="feat__p">Any of the 8 groups → donate-to / receive-from, for red cells or plasma.</p>
+          </article>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><path d="M20 8 v16 M14 18 l6 6 l6 -6" fill="none" stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 30 h20" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
+            </span>
+            <h3 class="feat__h">Exports as the handoff</h3>
+            <p class="feat__p">CSV of the logbook, a downloadable <code>.ics</code> reminder, and a printable wallet donor card.</p>
+          </article>
+          <article class="feat" data-reveal>
+            <span class="feat__ico" aria-hidden="true">
+              <svg viewBox="0 0 40 40"><path d="M20 7 l11 5 v8 c0 8 -6 12 -11 14 c-5 -2 -11 -6 -11 -14 v-8 z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M15 20 l4 4 l7 -8" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="feat__h">Full sources panel</h3>
+            <p class="feat__p">Every rule with its authority, verbatim quote, link and last-verified date.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7 · CTA ============ -->
+    <section class="scene scene--cta" id="s-cta" data-scene>
+      <div class="scene__inner cta__inner">
+        <div class="cta-ring" aria-hidden="true">
+          <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="82" fill="none" stroke="var(--ring-track)" stroke-width="14"/><path d="M100 18 A82 82 0 1 1 42.6 152" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round"/><circle cx="100" cy="18" r="10" fill="var(--accent)"/></svg>
+        </div>
+        <h2 class="cta__h">Find your next-eligible date now.</h2>
+        <p class="cta__p">Free, offline, no account. It opens in your browser and computes everything on your device.</p>
+        <a class="btn btn--lg" href="https://sreenivas-sadhu-prabhakara.github.io/donorbook/">Open donorbook →</a>
+        <p class="cta__sub">No install. No sign-up. Nothing leaves your browser.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__inner">
+      <p class="foot__disclaimer">
+        <strong>Not medical advice.</strong> This page explains <a href="https://sreenivas-sadhu-prabhakara.github.io/donorbook/">donorbook</a>,
+        a pre-check built from the published general criteria of three named authorities (NBTC India, American Red Cross, UK NHSBT).
+        It never confirms eligibility — the blood bank's on-site screening always decides. Rules change and individual blood banks differ;
+        medication and detailed medical-history questions are never computed. Intervals cited here were last verified 2026-07-22.
+      </p>
+      <p class="foot__meta">
+        <span>Runs 100% offline</span><span class="foot__dot">·</span>
+        <span>No network, no accounts</span><span class="foot__dot">·</span>
+        <span><a href="https://sreenivas-sadhu-prabhakara.github.io/donorbook/">Open the app</a></span><span class="foot__dot">·</span>
+        <span>MIT&nbsp;License</span><span class="foot__dot">·</span>
+        <span>&copy; 2026 Sreenivas&nbsp;Sadhu&nbsp;Prabhakara</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
